@@ -9,8 +9,6 @@ public static class ServiceExtentions
     {
         services.AddScoped<IUserService, UserService>();
 
-        services.AddControllers();
-
         return services;
     }
 }

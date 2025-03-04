@@ -1,8 +1,11 @@
-using ChatApi;
 using ChatApi.Application;
+using ChatApi.Extensions;
 using ChatApi.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHangFire(builder.Configuration);
+builder.Services.AddSingleton<FileRecord>();
 
 builder.Services.AddControllers();
 

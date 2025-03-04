@@ -1,5 +1,4 @@
 ﻿using ChatApi.Application.Repositories.Users;
-using ChatApi.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

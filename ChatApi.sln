@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35728.132 d17.12
+VisualStudioVersion = 17.12.35728.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApi", "ChatApi\ChatApi.csproj", "{4050EA54-5C01-48F7-B69C-51DD8F45A4D7}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApi.Application", "ChatApi.Application\ChatApi.Application.csproj", "{B25CFD11-5D63-4E59-BF1A-CC77FEF2B7B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApi.Infrastructure", "ChatApi.Infrastructure\ChatApi.Infrastructure.csproj", "{39DFD1E3-3F01-474A-BFB6-64E647F557D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CA4F3ADB-B295-4FAF-891A-A044D1DFA4D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +40,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4050EA54-5C01-48F7-B69C-51DD8F45A4D7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{D7823736-7A82-462C-81AE-FBF4EF238504} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{B25CFD11-5D63-4E59-BF1A-CC77FEF2B7B8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{39DFD1E3-3F01-474A-BFB6-64E647F557D5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2ACAF14B-E231-4DBF-BCB8-EDD76FBC04F8}
 	EndGlobalSection
 EndGlobal

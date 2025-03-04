@@ -1,4 +1,7 @@
-﻿namespace ChatApi;
+﻿using ChatApi.Infrastructure.Extensions;
+using Hangfire;
+
+namespace ChatApi.Extensions;
 
 public static class MiddlewareExtensions
 {
@@ -8,9 +11,12 @@ public static class MiddlewareExtensions
         {
             app.UseSwagger();
             app.UseSwaggerUI();
+            app.ApplyMigrations();
         }
 
         app.UseHttpsRedirection();
+
+        app.UseHangfireDashboard("/dashboard");
 
         app.UseAuthentication();
         app.UseAuthorization();

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChatApi.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/account")]
 [ApiController]
 public class AccountController : ControllerBase
 {
@@ -39,5 +39,18 @@ public class AccountController : ControllerBase
         }
 
         return Ok(new { token });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefershTokenAsync([FromBody] string refreshToken)
+    {
+        var response = await _userService.RefreshTokenAsync(refreshToken);
+
+        if (response == null)
+        {
+            return Unauthorized("Неверный рефреш токен");
+        }
+
+        return Ok(response);
     }
 }
