@@ -9,8 +9,8 @@ public interface IUserRepository
     Task SaveRefreshTokenAsync(RefreshToken refreshToken);
     Task<RefreshToken> GetRefreshTokenAsync(string token);
     Task UpdateRefreshTokenAsync(RefreshToken refreshToken);
-    Task<IEnumerable<RefreshToken>> GetRefreshTokensByUserIdAsync(int userId);
-    Task RevokeAllUserRefreshTokensAsync(int userId);
+    Task<IEnumerable<RefreshToken>> GetActiveRefreshTokensByUserIdAsync(int userId);
+    Task RevokeAllActiveRefreshTokensAsync(int userId);
     Task DeleteRefreshTokensAsync(IEnumerable<RefreshToken> refreshTokens);
-
+    Task<List<string>> GetUserRefreshTokenStringsAsync(int userId);
 }

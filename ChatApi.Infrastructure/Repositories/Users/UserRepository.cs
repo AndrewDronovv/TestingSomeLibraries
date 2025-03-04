@@ -1,6 +1,7 @@
 ﻿using ChatApi.Domain.Entities;
 using ChatApi.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace ChatApi.Application.Repositories.Users;
 
@@ -44,26 +45,22 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<RefreshToken>> GetRefreshTokensByUserIdAsync(int userId)
+    public async Task<IEnumerable<RefreshToken>> GetActiveRefreshTokensByUserIdAsync(int userId)
     {
         return await _context.RefreshTokens
             .Where(rt => rt.UserId == userId && rt.Revoked == null && rt.Expires > DateTime.UtcNow)
             .ToListAsync();
     }
 
-
-    public async Task RevokeAllUserRefreshTokensAsync(int userId)
+    public async Task RevokeAllActiveRefreshTokensAsync(int userId)
     {
         var refreshTokens = await _context.RefreshTokens
             .Where(rt => rt.UserId == userId && rt.Revoked == null && rt.Expires > DateTime.UtcNow)
             .ToListAsync();
 
-        if (refreshTokens.Any())
+        foreach (var token in refreshTokens)
         {
-            foreach (var token in refreshTokens)
-            {
-                token.Revoked = DateTime.UtcNow;
-            }
+            token.Revoked = DateTime.UtcNow;
         }
 
         _context.RefreshTokens.UpdateRange(refreshTokens);
@@ -74,5 +71,17 @@ public class UserRepository : IUserRepository
     {
         _context.RefreshTokens.RemoveRange(refreshTokens);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<string>> GetUserRefreshTokenStringsAsync(int userId)
+    {
+        return await _context.RefreshTokens
+                .Where(rt => rt.UserId == userId)
+                .Select(rt =>
+                    $"Token: {rt.Token}, " +
+                    $"Created: {rt.Created.ToString("F") }, " +
+                    $"Expires: {rt.Expires.ToString("F")}, " +
+                    $"Revoked: {(rt.Revoked.HasValue ? rt.Revoked.Value.ToString("F") : "null")}")
+                .ToListAsync();
     }
 }

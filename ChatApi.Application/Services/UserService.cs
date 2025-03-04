@@ -89,12 +89,11 @@ public class UserService : IUserService
             return null;
         }
 
-        await _userRepository.RevokeAllUserRefreshTokensAsync(existingRefreshToken.UserId);
+        await _userRepository.RevokeAllActiveRefreshTokensAsync(existingRefreshToken.UserId);
 
         var newJwtToken = GenerateJwtToken(existingRefreshToken.UserId);
         var newRefreshToken = GenerateRefreshToken(existingRefreshToken.UserId);
 
-        //await _userRepository.UpdateRefreshTokenAsync(newRefreshToken);
         await _userRepository.SaveRefreshTokenAsync(newRefreshToken);
 
         return new Response(newJwtToken, newRefreshToken.Token);
@@ -137,10 +136,15 @@ public class UserService : IUserService
         };
     }
 
-    public async Task RevokeAllUserRefreshTokensAsync(int userId)
+    public async Task DeleteActiveRefreshTokensAsync(int userId)
     {
-        var refreshTokens = await _userRepository.GetRefreshTokensByUserIdAsync(userId);
+        var refreshTokens = await _userRepository.GetActiveRefreshTokensByUserIdAsync(userId);
 
         await _userRepository.DeleteRefreshTokensAsync(refreshTokens);
+    }
+
+    public async Task<List<string>> GetUserRefreshTokensInfoAsync(int userId)
+    {
+        return await _userRepository.GetUserRefreshTokenStringsAsync(userId);
     }
 }

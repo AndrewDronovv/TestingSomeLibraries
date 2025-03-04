@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHangFire(builder.Configuration);
 builder.Services.AddSingleton<FileRecord>();
+builder.Services.AddSingleton<TokenFileRecord>();
 
 builder.Services.AddControllers();
 
