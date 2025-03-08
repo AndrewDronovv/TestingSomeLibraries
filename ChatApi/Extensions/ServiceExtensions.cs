@@ -3,6 +3,7 @@ using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 
 namespace ChatApi.Extensions;
@@ -39,9 +40,14 @@ public static class ServiceExtensions
 
     public static IServiceCollection AddSwaggerGenWithAuth(this IServiceCollection services)
     {
-        services.AddSwaggerGen(o =>
+        services.AddSwaggerGen(setupAction =>
         {
-            o.CustomSchemaIds(id => id.FullName!.Replace('+', '-'));
+            var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+
+            setupAction.IncludeXmlComments(xmlCommentsFullPath);
+
+            setupAction.CustomSchemaIds(id => id.FullName!.Replace('+', '-'));
 
             var securityScheme = new OpenApiSecurityScheme
             {
@@ -53,7 +59,7 @@ public static class ServiceExtensions
                 BearerFormat = "JWT"
             };
 
-            o.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
+            setupAction.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
 
             var securityRequirement = new OpenApiSecurityRequirement
             {
@@ -70,7 +76,7 @@ public static class ServiceExtensions
                 }
             };
 
-            o.AddSecurityRequirement(securityRequirement);
+            setupAction.AddSecurityRequirement(securityRequirement);
         });
 
         return services;
@@ -96,4 +102,13 @@ public static class ServiceExtensions
 
         return services;
     }
+
+    public static void ConfigureCors(this IServiceCollection services) =>
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", builder =>
+                builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+        });
 }

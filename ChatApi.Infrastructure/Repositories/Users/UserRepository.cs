@@ -11,7 +11,8 @@ public class UserRepository : IUserRepository
 
     public UserRepository(AppDbContext context)
     {
-        _context = context;
+        _context = context ??
+            throw new ArgumentNullException(nameof(context));
     }
 
     public async Task<User> GetByLoginAsync(string login)
@@ -79,9 +80,10 @@ public class UserRepository : IUserRepository
                 .Where(rt => rt.UserId == userId)
                 .Select(rt =>
                     $"Token: {rt.Token}, " +
-                    $"Created: {rt.Created.ToString("F") }, " +
+                    $"Created: {rt.Created.ToString("F")}, " +
                     $"Expires: {rt.Expires.ToString("F")}, " +
-                    $"Revoked: {(rt.Revoked.HasValue ? rt.Revoked.Value.ToString("F") : "null")}")
+                    $"Revoked: {(rt.Revoked.HasValue ? rt.Revoked.Value.ToString("F")
+                    : "null")}")
                 .ToListAsync();
     }
 }

@@ -14,6 +14,7 @@ public static class MiddlewareExtensions
             app.ApplyMigrations();
         }
 
+        app.UseStaticFiles();
         app.UseHttpsRedirection();
 
         app.UseHangfireDashboard("/dashboard");

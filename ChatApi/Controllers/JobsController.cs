@@ -1,6 +1,7 @@
 ﻿using ChatApi.Domain.Entities;
 using ChatApi.Infrastructure.Services;
 using Hangfire;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 
@@ -8,17 +9,18 @@ using System.Text;
 [Route("api/jobs")]
 public class JobsController : ControllerBase
 {
-    private readonly FileRecord _fileRecord;
+    private readonly TaskFileRecord _fileRecord;
     private readonly IUserService _userService;
     private readonly TokenFileRecord _tokenFileRecord;
 
-    public JobsController(FileRecord fileRecord, IUserService userService, TokenFileRecord tokenFileRecord)
+    public JobsController(TaskFileRecord fileRecord, IUserService userService, TokenFileRecord tokenFileRecord)
     {
         _fileRecord = fileRecord;
         _userService = userService;
         _tokenFileRecord = tokenFileRecord;
     }
 
+    [Authorize]
     [HttpPost("record-time")]
     public IActionResult StartRecurringTimeJob()
     {
@@ -30,20 +32,34 @@ public class JobsController : ControllerBase
         return Ok("Время было записано");
     }
 
-    [HttpPost("delete-tokens")]
-    public async Task<IActionResult> DeleteRevokedRefreshTokens(int userId)
+    /// <summary>
+    /// Запускает фоновую задачу для записи информации о refresh токенах пользователя в файл.
+    /// </summary>
+    /// <param name="userId">Идентификатор пользователя, чьи токены будут обработаны</param>
+    /// <returns>Возвращает объект, содержащий идентификатор фоновой задачи и сообщение о статусе операции</returns>
+    /// <response code="200">Фоновая задача успешно запланирована, возвращает jobId и сообщение</response>
+    /// <response code="401">Пользователь не авторизован</response>
+    [Authorize]
+    [HttpPost("info-refresh-tokens")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> StartScheduleTimeJob([FromQuery] int userId)
     {
         var tokenInfos = await _userService
             .GetUserRefreshTokensInfoAsync(userId);
 
         var jobId = BackgroundJob.Schedule(
-            () => _tokenFileRecord.RecordTokenAsync(tokenInfos),
+            () => _tokenFileRecord.RecordTokenInfoAsync(tokenInfos),
             TimeSpan.FromSeconds(10));
 
-        return Ok(jobId);
+        return Ok(new
+        {
+            jobId,
+            message = @$"Фоновая задача запланирована успешно, {tokenInfos.Count()} записей будет записано в файл",
+        });
     }
 }
-public class FileRecord
+public class TaskFileRecord
 {
     public async Task RecordCurrentTime()
     {
@@ -69,7 +85,7 @@ public class FileRecord
 
 public class TokenFileRecord
 {
-    public async Task RecordTokenAsync(List<string> tokenInfos)
+    public async Task RecordTokenInfoAsync(List<string> tokenInfos)
     {
         try
         {

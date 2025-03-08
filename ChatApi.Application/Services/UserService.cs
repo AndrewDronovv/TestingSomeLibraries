@@ -41,6 +41,7 @@ public class UserService : IUserService
 
         return true;
     }
+
     public async Task<Response> LoginAsync(UserLogin input)
     {
         var existingUser = await _userRepository.GetByLoginAsync(input.Login);

@@ -12,7 +12,8 @@ public class AccountController : ControllerBase
 
     public AccountController(IUserService userService)
     {
-        _userService = userService;
+        _userService = userService ?? 
+            throw new ArgumentNullException(nameof(userService));
     }
 
     [HttpPost("register")]
@@ -28,7 +29,7 @@ public class AccountController : ControllerBase
         return Ok("Регистрация успешна");
     }
 
-    [HttpPost("login")]
+    [HttpPost("authenticate")]
     public async Task<IActionResult> LoginAsync([FromBody] UserLogin input)
     {
         var token = await _userService.LoginAsync(input);
