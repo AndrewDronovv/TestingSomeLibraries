@@ -48,9 +48,8 @@ public class JobsController : ControllerBase
         var tokenInfos = await _userService
             .GetUserRefreshTokensInfoAsync(userId);
 
-        var jobId = BackgroundJob.Schedule(
-            () => _tokenFileRecord.RecordTokenInfoAsync(tokenInfos),
-            TimeSpan.FromSeconds(10));
+        var jobId = BackgroundJob.Schedule<TokenFileRecord>(
+            x => x.RecordTokenInfoAsync(tokenInfos), TimeSpan.FromSeconds(10));
 
         return Ok(new
         {
@@ -102,4 +101,3 @@ public class TokenFileRecord
         }
     }
 }
-
